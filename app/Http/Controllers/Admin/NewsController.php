@@ -5,6 +5,10 @@ use App\Http\Controllers\Controller;
 
 use App\News;
 
+use App\History;
+
+use Carbon\Carbon;
+
 class NewsController extends Controller
 {
   public function add()
@@ -23,10 +27,10 @@ class NewsController extends Controller
   
       // フォームから画像が送信されてきたら、保存して、$news->image_path に画像のパスを保存する
       if (isset($form['image'])) {
-        $path = $request->file('image')->store('public/image');
-        $news->image_path = basename($path);
+          $path = $request->file('image')->store('public/image');
+          $news->image_path = basename($path);
       } else {
-        $news->image_path = null;
+          $news->image_path = null;
       }
 
       // フォームから送信されてきた_tokenを削除する
@@ -72,18 +76,21 @@ class NewsController extends Controller
       $news_form = $request->all();
       
       if (isset($news_form['image'])) {
-        $path = $request->file('image')->store('public/image');
-        $news->image_path = basename($path);
-        unset($news_form['image']);
+          $path = $request->file('image')->store('public/image');
+          $news->image_path = basename($path);
       } elseif (isset($request->remove)) {
-        $news->image_path = null;
-        unset($news_form['remove']);
+          $news->image_path = null;
+          unset($news_form['remove']);
       }
-      
       unset($news_form['_token']);
 
       // 該当するデータを上書きして保存する
       $news->fill($news_form)->save();
+      
+      $history = new History;
+      $history->news_id = $news->id;
+      $history->edited_at = Carbon::now();
+      $history->save();
 
       return redirect('admin/news/');
   }
