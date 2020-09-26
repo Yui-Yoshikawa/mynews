@@ -26,8 +26,16 @@
             </div>
             <div class="form-group row">
                 <label class="col-md-2">性別</label>
-                <div class="col-md-10">
-                    <input type="text" class="form-control" name="gender" value="{{ old('gender') }}">
+                <div class="col-md-10 row">
+                    @foreach ($genders as $key => $gender)
+                        <div class="col-md-3">
+                            {{ Form::radio('gender', $key, false, ['id' => 'gender-'.$key]) }}
+                            <label for="gender-{{ $key }}">
+                              {{ $gender }}  
+                            </label>
+                        </div>
+                    @endforeach
+                    <!--<input type="text" class="form-control" name="gender" value="{{ old('gender') }}">-->
                 </div>
             </div>
             <div class="form-group row">
